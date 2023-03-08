@@ -48,8 +48,13 @@ class MainActivity : ComponentActivity() {
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(onClick = {
                         scope.launch {
+                            val message = if (textFieldState != "") {
+                                "Hello $textFieldState"
+                            }else{
+                                "Enter your name first idiots!"
+                            }
                             scaffoldState.snackbarHostState.showSnackbar(
-                                message = "Hello $textFieldState"
+                                message = message
                             )
                         }
                     }) {
