@@ -5,13 +5,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -20,26 +16,48 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.pljetpackcompose.ui.theme.PLJetpackComposeTheme
+import androidx.constraintlayout.compose.ChainStyle
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.ConstraintSet
+import androidx.constraintlayout.compose.Dimension
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val painter = painterResource(id = R.drawable.dota)
-            val description = "This is Dota 2."
-            val title = "Dota2"
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(0.5f)
-                    .padding(15.dp)
+            val constraints = ConstraintSet {
+                val greenBox = createRefFor("greenBox")
+                val redBox = createRefFor("redBox")
+                val guideLine = createGuidelineFromTop(fraction = 0.5f)
+                constrain(ref = greenBox) {
+                    top.linkTo(guideLine)
+                    start.linkTo(parent.start)
+                    width = Dimension.value(100.dp)
+                    height = Dimension.value(100.dp)
+                }
+                constrain(ref = redBox) {
+                    top.linkTo(parent.top)
+                    start.linkTo(greenBox.end)
+                    end.linkTo(parent.end)
+                    width = Dimension.value(100.dp)
+                    height = Dimension.value(100.dp)
+                }
+                createHorizontalChain(greenBox,redBox, chainStyle = ChainStyle.Spread)
+            }
+            ConstraintLayout(
+                constraintSet = constraints,
+                modifier = Modifier.fillMaxSize()
             ) {
-                ImageCard(painter = painter, contentDescription = description, title = title)
+                Box(modifier = Modifier
+                    .background(Color.Green)
+                    .layoutId("greenBox"))
+                Box(modifier = Modifier
+                    .background(Color.Red)
+                    .layoutId("redBox"))
             }
         }
     }
